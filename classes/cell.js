@@ -76,12 +76,12 @@ class Cell {
                 //move cell, then place on temp board
                 
 
-                tempBoard._board[this.properties.position.value.x][this.properties.position.value.y] = this;
+                tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].value = this;
             }                
             
         } else {
             this._alive = false;
-            board[this.properties.position.value.x][this.properties.position.value.y].Reset(this.food);
+            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(this.food);
         }
     }
 
@@ -107,6 +107,7 @@ class Cell {
             }
         }
     }
+
 
     InsertionMutation(mutationArray, numberOfMoveableAttributes) {
         var mutationFromIndex = Math.random();

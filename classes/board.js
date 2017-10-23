@@ -25,7 +25,7 @@ class Board {
     }
 
     PlaceCell(cell, position) {
-        this._board[position.x][position.y] = cell;
+        this._board[position.x][position.y].value = cell;
         this.cells.push(cell);
     }
 
@@ -53,7 +53,7 @@ class Board {
             row = "| ";
 
             for (var j = 0; j < this.size; j++) {
-                row += (Number.isInteger(this._board[j][i]) ? this._board[j][i] : "-") + " | ";
+                row += (Number.isInteger(this._board[j][i].value) ? this._board[j][i].value : "-") + " | ";
             }
 
             console.log(row);
