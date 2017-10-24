@@ -1,5 +1,6 @@
 const cellProperty = require('./cellProperty');
 const Helpers = require('./Helpers');
+const Point = require('./Point');
 
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
@@ -72,9 +73,9 @@ class Cell {
             if (neighbors.length >= 3)
                 shouldLive = false;
 
-            if (shouldLive){
+            if (shouldLive) {
                 //move cell, then place on temp board
-                
+                this.MoveCell(board, tempBoard);
 
                 tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].value = this;
             }                
@@ -119,6 +120,75 @@ class Cell {
         mutationArray.splice(mutationFromIndex, 1);
         mutationArray.splice(mutationToIndex, 0, movingMutation);
         return mutationArray;
+    }
+
+    MoveCell (board, tempBoard) {
+        var moveLocation = void 0;
+        var quantity = Helpers.GetRandomInRange(0, 1);
+        if (quantity === 0)
+            quantity--;
+
+        var direction = false; // start with horizontal
+        var maxX = this.properties.xMovement.value;
+        while ((maxX !== 0) && this.CanMove(direction, quantity, tempBoard) && this.CanMove(direction, quantity, board)) {
+            // Remove cell from old location
+            tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].Reset();
+            moveLocation = {x: this.properties.position.value.x + quantity, y: this.properties.position.value.y};
+            this.properties.position.value.x = this.properties.position.value.x + quantity;
+            tempBoard.MoveCell(this, moveLocation);
+
+            // dec movement on x
+            maxX--;
+        }
+
+        direction = true; // now do vertical
+        quantity = Helpers.GetRandomInRange(0, 1);
+        if (quantity === 0)
+            quantity--;
+
+        var maxY = this.properties.yMovement.value;
+        while ((maxY !== 0) && this.CanMove(direction, quantity, tempBoard) && this.CanMove(direction, quantity, board)) {
+            // Remove cell from old location
+            tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].Reset();
+            moveLocation = {x: this.properties.position.value.x, y: this.properties.position.value.y + quantity};
+            this.properties.position.value.y = this.properties.position.value.y + quantity;
+            tempBoard.MoveCell(this, moveLocation);
+
+            // dec movemenet on y
+            maxY--;
+        }
+    }
+
+    CanMove(direction, quantity, tempBoard) {
+        if (direction === true) {
+            // Vertical
+            // Check if off board
+            if (((this.properties.position.value.y + quantity) >= tempBoard.size) ||
+                ((this.properties.position.value.y + quantity) < 0)) {
+                return false;
+            }
+
+            // Check if cell exists here
+            var newX = this.properties.position.value.x;
+            var newY = (this.properties.position.value.y + quantity);
+            if (tempBoard._board[newX][newY].value !== 0)
+                return false;
+        } else {
+            // Horizontal
+            // Check if off board
+            if (((this.properties.position.value.x + quantity) >= tempBoard.size) ||
+                ((this.properties.position.value.x + quantity) < 0)) {
+                return false;
+            }
+
+            // Check if cell exists here
+            var newX = (this.properties.position.value.x + quantity);
+            var newY = this.properties.position.value.y;
+            if (tempBoard._board[newX][newY].value !== 0)
+                return false;
+        }
+
+        return true;
     }
 }
 

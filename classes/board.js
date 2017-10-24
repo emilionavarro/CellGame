@@ -25,8 +25,13 @@ class Board {
     }
 
     PlaceCell(cell, position) {
-        this._board[position.x][position.y].value = cell;
+        this.MoveCell(cell, position);
         this.cells.push(cell);
+    }
+
+    MoveCell(cell, position) {
+        cell.food += this._board[position.x][position.y].Harvest();
+        this._board[position.x][position.y].value = cell;
     }
 
     Generate() {
@@ -89,8 +94,8 @@ class Board {
 
         for (var i = minMaxX.min; i <= minMaxX.max; i++) {
             for (var j = minMaxY.min; j <= minMaxY.max; j++) {
-                if (this._board[i][j] !== 0 && (i !== position.x && j !== position.y)) {
-                    neighbors.push(this._board[i][j]);
+                if (this._board[i][j].value !== 0 && (i !== position.x && j !== position.y)) {
+                    neighbors.push(this._board[i][j].value);
                 }
             }
         }
