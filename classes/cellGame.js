@@ -1,7 +1,6 @@
 const Point = require('./Point');
 const Board = require('./Board');
 const Cell = require('./Cell');
-const cellProperty = require('./cellProperty');
 
 class CellGame {
     constructor(size, cellTypes) {

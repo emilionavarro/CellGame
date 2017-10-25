@@ -1,4 +1,5 @@
 const Cell = require('../classes/Cell');
+const Genes = require('./../enums/Genes');
 
 class Group2 extends Cell {
     constructor (lifeSpan, maxOffspring, direction, position, mutate) {
@@ -19,9 +20,9 @@ class Group2 extends Cell {
     }
 
     CreateChild(position) {
-        return new Group2(this.properties.maxLifeSpan.value,
-            this.properties.maxOffSpring.value,
-            { x: this.properties.xMovement.value, y: this.properties.yMovement.value },
+        return new Group2(this.attributes[Genes.LifeSpan],
+            this.attributes[Genes.MaxOffspring],
+            { x: this.attributes[Genes.MoveX], y: this.attributes[Genes.MoveY] },
             position,
             true);
     }

@@ -1,29 +1,25 @@
-const cellProperty = require('./cellProperty');
 const Helpers = require('./Helpers');
 const Point = require('./Point');
+const Genes = require('./../enums/Genes');
 
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
-        this.properties = {
-            generation: new cellProperty(0, false),
-            maxLifeSpan: new cellProperty(lifeSpan, true),
-            maxOffSpring: new cellProperty(maxOffspring, true),
-            xMovement: new cellProperty(direction.x, true),
-            yMovement: new cellProperty(direction.y, true),
-            family: new cellProperty(family, false),
-            position: new cellProperty(position, false),
-            foodRequirement: new cellProperty(Helpers.GetRandomInRange(1, 3), true)
-        };
+        this.attributes = [];
 
+        this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Helpers.GetRandomInRange(1, 3));
+
+        this._generation = 0;
+        this._family = family;
         this._alive = true;
-        this.food = 0;
-        this.character = '-';
 
+        this.position = position;
+        this.food = 0;
+
+        this.SetCharacter();
         this.SetMutation();
 
-        // See if we need to mutate this cell
         if (mutate) {
-            this.MutateCell();
+            this.mutation();
         }
     }
 
@@ -32,21 +28,23 @@ class Cell {
     }
 
     Print() {
-        console.log("Generation: " + this.properties.generation.value);
-        console.log("Location: " + this.properties.position.value.x + "," + this.properties.position.value.y);
-        console.log("Max life: " + this.properties.maxLifeSpan.value);
-        console.log("xMovement: " + this.properties.xMovement.value);
-        console.log("yMovement: " + this.properties.yMovement.value);
+        console.log("Generation: " + this._generation);
+        console.log("Location: " + this.position.x + "," + this.position.y);
+        console.log("Max life: " + this.attributes[Genes.LifeSpan]);
+        console.log("xMovement: " + this.attributes[Genes.MoveX]);
+        console.log("yMovement: " + this.attributes[Genes.MoveY]);
+        console.log("maxOffSpring: " + this.attributes[Genes.MaxOffspring]);
+
     }
 
     Divide(board) {
         if (this._alive) {
-            var spawnCount = Helpers.GetRandomInRange(1, this.properties.maxOffSpring.value);
+            var spawnCount = Helpers.GetRandomInRange(1, this.attributes[Genes.MaxOffspring]);
             var spawnLocation = void 0;
 
             for (var i = 0; i < spawnCount; i++) {
-                if (this.food > this.properties.foodRequirement.value) {
-                    spawnLocation = board.GetEmptyNeighbor(this.properties.position.value, board);
+                if (this.food > this.attributes[Genes.FoodRequirement]) {
+                    spawnLocation = board.GetEmptyNeighbor(this.position, board);
 
                     //TODO: resolve children placement conflicts
 
@@ -54,7 +52,7 @@ class Cell {
                         //create child
                         var child = this.CreateChild(spawnLocation);
                         board.PlaceCell(child, spawnLocation);
-                        this.food -= this.properties.foodRequirement.value;
+                        this.food -= this.attributes[Genes.FoodRequirement];
                     }
                 } else {
                     //not enough food to attempt division
@@ -65,11 +63,11 @@ class Cell {
     }
 
     CreateChild(position) {
-        return new Cell(this.properties.maxLifeSpan.value,
-            this.properties.maxOffSpring.value,
-            { x: this.properties.xMovement.value, y: this.properties.yMovement.value },
+        return new Cell(this.attributes[Genes.LifeSpan],
+            this.attributes[Genes.MaxOffspring],
+            { x: this.attributes[Genes.MoveX], y: this.attributes[Genes.MoveY] },
             position,
-            this.properties.family.value,
+            this._family,
             true);
     }
 
@@ -78,17 +76,17 @@ class Cell {
         var neighbors = void 0;
         var shouldLive = true;
 
-        this.properties.generation.value++;
+        this._generation++;
 
-        if (this.properties.generation.value <= this.properties.maxLifeSpan.value) {
+        if (this._generation <= this.attributes[Genes.LifeSpan]) {
             //place cell on temp board
-            neighbors = board.GetNeighbors(this.properties.position.value);
+            neighbors = board.GetNeighbors(this.position);
             
             if (neighbors.length >= 3) {
                 var enemyCount = 0;
 
                 for (var i = 0, len = neighbors.length; i < len; i++) {
-                    if (neighbors[i].properties.family.value !== this.properties.family.value) {
+                    if (neighbors[i]._family !== this._family) {
                         enemyCount++;
                     }
                 }
@@ -101,35 +99,12 @@ class Cell {
                 //move cell, then place on temp board
                 this.MoveCell(board);
 
-                board._board[this.properties.position.value.x][this.properties.position.value.y].value = this;
+                board._board[this.position.x][this.position.y].value = this;
             }                
             
         } else {
             this._alive = false;
-            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(this.food);
-        }
-    }
-
-    MutateCell() {
-        // Build array of values
-        var mutationArray = [];
-        var numberOfMoveableAttributes = 0;
-        for (var key in this.properties) {
-            if (this.properties[key].IsMoveAble()) {
-                numberOfMoveableAttributes++;
-                mutationArray.push(this.properties[key]);
-            }
-        }
-
-        // Insertion mutation
-        mutationArray = this.mutation(mutationArray, numberOfMoveableAttributes);
-
-        // Now mutate the cell
-        var i = 0;
-        for (var key in this.properties) {
-            if (this.properties[key].IsMoveAble()) {
-                this.properties[key] = mutationArray[i++];
-            }
+            board._board[this.position.x][this.position.y].Reset(this.food);
         }
     }
 
@@ -138,47 +113,50 @@ class Cell {
     }
 
 
-    InsertionMutation(mutationArray, numberOfMoveableAttributes) {
-        var mutationFromIndex = Math.random();
-        var mutationToIndex = Math.random();
-        mutationFromIndex = (Math.floor(numberOfMoveableAttributes * mutationFromIndex));
-        mutationToIndex = (Math.floor(numberOfMoveableAttributes * mutationToIndex));
+    InsertionMutation () {
+        var len = this.attributes.length;
 
-        var movingMutation = mutationArray[mutationFromIndex];
-        mutationArray.splice(mutationFromIndex, 1);
-        mutationArray.splice(mutationToIndex, 0, movingMutation);
-        return mutationArray;
+        var mutationFromIndex = this.GetRandomMutationIndex(len);
+        var mutationToIndex = this.GetRandomMutationIndex(len);
+        var movingMutation = this.attributes[mutationFromIndex];
+        
+        // Verify that we dont add to the end something that does not exist anymore.
+        if (mutationToIndex === len)
+        mutationToIndex = len - 1;
+        
+        this.attributes.splice(mutationFromIndex, 1);
+        this.attributes.splice(mutationToIndex, 0, movingMutation);
     }
 
-    ExchangeMutation (mutationArray, numberOfMoveableAttributes) {
-        var mutationFromIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
-        var mutationToIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
-        var movingMutation = mutationArray[mutationFromIndex];
+    ExchangeMutation () {
+        var len = this.attributes.length;
+        var mutationFromIndex = this.GetRandomMutationIndex(len);
+        var mutationToIndex = this.GetRandomMutationIndex(len);
+        var movingMutation = this.attributes[mutationFromIndex];
 
         // Verify that we dont add to the end something that does not exist anymore.
-        if (mutationToIndex === numberOfMoveableAttributes) 
-            mutationToIndex = numberOfMoveableAttributes - 1;
+        if (mutationToIndex === len) 
+            mutationToIndex = len - 1;
             
-        mutationArray.splice(mutationFromIndex, 1, mutationArray[mutationToIndex]);
-        mutationArray.splice(mutationToIndex, 1, movingMutation);
-        return mutationArray;
+        this.attributes.splice(mutationFromIndex, 1, this.attributes[mutationToIndex]);
+        this.attributes.splice(mutationToIndex, 1, movingMutation);
     }
 
-    DisplacementMutation (mutationArray, numberOfMoveableAttributes) {
+    DisplacementMutation () {
+        var len = this.attributes.length;
         //TODO: fix this mutation
-        var mutationFromIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
-        var mutationToIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
-        var mutationLength = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var mutationFromIndex = this.GetRandomMutationIndex(len);
+        var mutationToIndex = this.GetRandomMutationIndex(len);
+        var mutationLength = this.GetRandomMutationIndex(len);
         var movingMutation = [];
 
         if (mutationFromIndex > mutationToIndex) {
-            if ((mutationFromIndex + mutationLength) > numberOfMoveableAttributes)
-                mutationLength = numberOfMoveableAttributes - mutationFromIndex;
+            if ((mutationFromIndex + mutationLength) > len)
+                mutationLength = len - mutationFromIndex;
         }
 
-        movingMutation = mutationArray.splice(mutationFromIndex, mutationLength);
-        mutationArray.splice(mutationToIndex, mutationLength, movingMutation);
-        return mutationArray;
+        movingMutation = this.attributes.splice(mutationFromIndex, mutationLength);
+        this.attributes.splice(mutationToIndex, mutationLength, movingMutation);
     }
 
     GetRandomMutationIndex(numberTo) {
@@ -192,12 +170,12 @@ class Cell {
             quantity--;
 
         var direction = false; // start with horizontal
-        var maxX = this.properties.xMovement.value;
+        var maxX = this.attributes[Genes.MoveX];
         while ((maxX !== 0) && this.CanMove(direction, quantity, board)) {
             // Remove cell from old location
-            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(0);
-            moveLocation = {x: this.properties.position.value.x + quantity, y: this.properties.position.value.y};
-            this.properties.position.value.x = this.properties.position.value.x + quantity;
+            board._board[this.position.x][this.position.y].Reset(0);
+            moveLocation = {x: this.position.x + quantity, y: this.position.y};
+            this.position.x = this.position.x + quantity;
             board.MoveCell(this, moveLocation);
 
             // dec movement on x
@@ -209,12 +187,12 @@ class Cell {
         if (quantity === 0)
             quantity--;
 
-        var maxY = this.properties.yMovement.value;
+        var maxY = this.attributes[Genes.MoveY];
         while ((maxY !== 0) && this.CanMove(direction, quantity, board)) {
             // Remove cell from old location
-            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(0);
-            moveLocation = {x: this.properties.position.value.x, y: this.properties.position.value.y + quantity};
-            this.properties.position.value.y = this.properties.position.value.y + quantity;
+            board._board[this.position.x][this.position.y].Reset(0);
+            moveLocation = {x: this.position.x, y: this.position.y + quantity};
+            this.position.y = this.position.y + quantity;
             board.MoveCell(this, moveLocation);
 
             // dec movemenet on y
@@ -230,27 +208,27 @@ class Cell {
         if (direction === true) {
             // Vertical
             // Check if off board
-            if (((this.properties.position.value.y + quantity) >= board.size) ||
-                ((this.properties.position.value.y + quantity) < 0)) {
+            if (((this.position.y + quantity) >= board.size) ||
+                ((this.position.y + quantity) < 0)) {
                 return false;
             }
 
             // Check if cell exists here
-            var newX = this.properties.position.value.x;
-            var newY = (this.properties.position.value.y + quantity);
+            var newX = this.position.x;
+            var newY = (this.position.y + quantity);
             if (board._board[newX][newY].value !== 0)
                 return false;
         } else {
             // Horizontal
             // Check if off board
-            if (((this.properties.position.value.x + quantity) >= board.size) ||
-                ((this.properties.position.value.x + quantity) < 0)) {
+            if (((this.position.x + quantity) >= board.size) ||
+                ((this.position.x + quantity) < 0)) {
                 return false;
             }
 
             // Check if cell exists here
-            var newX = (this.properties.position.value.x + quantity);
-            var newY = this.properties.position.value.y;
+            var newX = (this.position.x + quantity);
+            var newY = this.position.y;
             if (board._board[newX][newY].value !== 0)
                 return false;
         }

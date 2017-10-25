@@ -3,7 +3,7 @@ const TestCell = require('./cells/TestCell');
 const Group2 = require('./cells/Group2');
 const Point = require('./classes/Point');
 const Helpers = require('./classes/Helpers');
-const boardSize = 20;
+const boardSize = 5;
 
 //get custom cells
 var customCells = [];
