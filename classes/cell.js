@@ -63,7 +63,7 @@ class Cell {
     }
 
     CreateChild(position) {
-        return new Cell(this.attributes[Genes.LifeSpan],
+        return new this.__proto__.constructor(this.attributes[Genes.LifeSpan],
             this.attributes[Genes.MaxOffspring],
             { x: this.attributes[Genes.MoveX], y: this.attributes[Genes.MoveY] },
             position,

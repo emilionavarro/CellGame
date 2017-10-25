@@ -14,14 +14,6 @@ class TestCell extends Cell {
     GetType() {
         return "TestCell";
     }
-
-    CreateChild(position) {
-        return new TestCell(this.attributes[Genes.LifeSpan],
-            this.attributes[Genes.MaxOffspring],
-            { x: this.attributes[Genes.MoveX], y: this.attributes[Genes.MoveY] },
-            position,
-            true);
-    }
 }
 
 module.exports = TestCell;
