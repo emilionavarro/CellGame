@@ -134,6 +134,36 @@ class Cell {
         return mutationArray;
     }
 
+    ExchangeMutation (mutationArray, numberOfMoveableAttributes) {
+        var mutationFromIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var mutationToIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var movingMutation = mutationArray[mutationFromIndex];
+
+        // Verify that we dont add to the end something that does not exist anymore.
+        if (mutationToIndex === numberOfMoveableAttributes) 
+            mutationToIndex = numberOfMoveableAttributes - 1;
+            
+        mutationArray.splice(mutationFromIndex, 1, mutationArray[mutationToIndex]);
+        mutationArray.splice(mutationToIndex, 1, movingMutation);
+        return mutationArray;
+    }
+
+    DisplacementMutation (mutationArray, numberOfMoveableAttributes) {
+        var mutationFromIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var mutationToIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var mutationLength = this.GetRandomMutationIndex(numberOfMoveableAttributes);
+        var movingMutation = [];
+
+        if (mutationFromIndex > mutationToIndex) {
+            if ((mutationFromIndex + mutationLength) > numberOfMoveableAttributes)
+                mutationLength = numberOfMoveableAttributes - mutationFromIndex;
+        }
+
+        movingMutation = mutationArray.splice(mutationFromIndex, mutationLength);
+        mutationArray.splice(mutationToIndex, mutationLength, movingMutation);
+        return mutationArray;
+    }
+
     MoveCell (board) {
         var moveLocation = void 0;
         var quantity = Helpers.GetRandomInRange(0, 1);
