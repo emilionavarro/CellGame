@@ -12,6 +12,7 @@ class Cell {
             yMovement: new cellProperty(direction.y, true),
             family: new cellProperty(family, false),
             position: new cellProperty(position, false),
+            foodRequirement: new cellProperty(Helpers.GetRandomInRange(1, 3), true)
         };
 
         this._alive = true;
@@ -31,20 +32,26 @@ class Cell {
         console.log("yMovement: " + this.properties.yMovement.value);
     }
 
-    Divide(tempBoard, board) {
+    Divide(board) {
         if (this._alive) {
             var spawnCount = Helpers.GetRandomInRange(1, this.properties.maxOffSpring.value);
             var spawnLocation = void 0;
 
             for (var i = 0; i < spawnCount; i++) {
-                spawnLocation = board.GetEmptyNeighbor(this.properties.position.value, tempBoard);
+                if (this.food > this.properties.foodRequirement.value) {
+                    spawnLocation = board.GetEmptyNeighbor(this.properties.position.value, board);
 
-                //TODO: resolve children placement conflicts
+                    //TODO: resolve children placement conflicts
 
-                if (spawnLocation) {
-                    //create child
-                    var child = this.CreateChild(spawnLocation);
-                    tempBoard.PlaceCell(child, spawnLocation);
+                    if (spawnLocation) {
+                        //create child
+                        var child = this.CreateChild(spawnLocation);
+                        board.PlaceCell(child, spawnLocation);
+                        this.food -= this.properties.foodRequirement.value;
+                    }
+                } else {
+                    //not enough food to attempt division
+                    break;
                 }
             }
         }
@@ -59,7 +66,7 @@ class Cell {
             true);
     }
 
-    Update(board, tempBoard) {
+    Update(board) {
         //rules
         var neighbors = void 0;
         var shouldLive = true;
@@ -75,9 +82,9 @@ class Cell {
 
             if (shouldLive) {
                 //move cell, then place on temp board
-                this.MoveCell(board, tempBoard);
+                this.MoveCell(board);
 
-                tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].value = this;
+                board._board[this.properties.position.value.x][this.properties.position.value.y].value = this;
             }                
             
         } else {
@@ -122,7 +129,7 @@ class Cell {
         return mutationArray;
     }
 
-    MoveCell (board, tempBoard) {
+    MoveCell (board) {
         var moveLocation = void 0;
         var quantity = Helpers.GetRandomInRange(0, 1);
         if (quantity === 0)
@@ -130,12 +137,12 @@ class Cell {
 
         var direction = false; // start with horizontal
         var maxX = this.properties.xMovement.value;
-        while ((maxX !== 0) && this.CanMove(direction, quantity, tempBoard) && this.CanMove(direction, quantity, board)) {
+        while ((maxX !== 0) && this.CanMove(direction, quantity, board)) {
             // Remove cell from old location
-            tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].Reset();
+            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(0);
             moveLocation = {x: this.properties.position.value.x + quantity, y: this.properties.position.value.y};
             this.properties.position.value.x = this.properties.position.value.x + quantity;
-            tempBoard.MoveCell(this, moveLocation);
+            board.MoveCell(this, moveLocation);
 
             // dec movement on x
             maxX--;
@@ -147,23 +154,23 @@ class Cell {
             quantity--;
 
         var maxY = this.properties.yMovement.value;
-        while ((maxY !== 0) && this.CanMove(direction, quantity, tempBoard) && this.CanMove(direction, quantity, board)) {
+        while ((maxY !== 0) && this.CanMove(direction, quantity, board)) {
             // Remove cell from old location
-            tempBoard._board[this.properties.position.value.x][this.properties.position.value.y].Reset();
+            board._board[this.properties.position.value.x][this.properties.position.value.y].Reset(0);
             moveLocation = {x: this.properties.position.value.x, y: this.properties.position.value.y + quantity};
             this.properties.position.value.y = this.properties.position.value.y + quantity;
-            tempBoard.MoveCell(this, moveLocation);
+            board.MoveCell(this, moveLocation);
 
             // dec movemenet on y
             maxY--;
         }
     }
 
-    CanMove(direction, quantity, tempBoard) {
+    CanMove(direction, quantity, board) {
         if (direction === true) {
             // Vertical
             // Check if off board
-            if (((this.properties.position.value.y + quantity) >= tempBoard.size) ||
+            if (((this.properties.position.value.y + quantity) >= board.size) ||
                 ((this.properties.position.value.y + quantity) < 0)) {
                 return false;
             }
@@ -171,12 +178,12 @@ class Cell {
             // Check if cell exists here
             var newX = this.properties.position.value.x;
             var newY = (this.properties.position.value.y + quantity);
-            if (tempBoard._board[newX][newY].value !== 0)
+            if (board._board[newX][newY].value !== 0)
                 return false;
         } else {
             // Horizontal
             // Check if off board
-            if (((this.properties.position.value.x + quantity) >= tempBoard.size) ||
+            if (((this.properties.position.value.x + quantity) >= board.size) ||
                 ((this.properties.position.value.x + quantity) < 0)) {
                 return false;
             }
@@ -184,7 +191,7 @@ class Cell {
             // Check if cell exists here
             var newX = (this.properties.position.value.x + quantity);
             var newY = this.properties.position.value.y;
-            if (tempBoard._board[newX][newY].value !== 0)
+            if (board._board[newX][newY].value !== 0)
                 return false;
         }
 

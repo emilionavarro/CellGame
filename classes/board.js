@@ -94,7 +94,7 @@ class Board {
 
         for (var i = minMaxX.min; i <= minMaxX.max; i++) {
             for (var j = minMaxY.min; j <= minMaxY.max; j++) {
-                if (this._board[i][j].value !== 0 && (i !== position.x && j !== position.y)) {
+                if (this._board[i][j].value !== 0 && (i !== position.x || j !== position.y)) {
                     neighbors.push(this._board[i][j].value);
                 }
             }

@@ -7,20 +7,22 @@ class CellGame {
     constructor(size) {
         this.size = size;
         this.board = new Board(size);
-        this.tempBoard = void 0;
         this.board.Generate();
         this.board.Populate();
 
-        this.interval = 1000;
+        this.interval = 2000;
     }
 
     Play(generation) {
         generation = generation || 0;
         console.log("Generation: " + ++generation);
 
-        this.PlayRound();
-
+        console.log("Pre: ");
         this.board.Print();
+        this.PlayRound();
+        console.log("Post: ");
+        this.board.Print();
+
         console.log(" ");
 
         setTimeout(this.Play.bind(this, generation), this.interval);
@@ -30,21 +32,15 @@ class CellGame {
         var cell = void 0;
         var cells = this.board.cells.slice(0);
 
-        this.tempBoard = new Board(this.size);
-        this.tempBoard.Generate();
-
         for (var i = 0, len = cells.length; i < len; i++) {
             cell = cells[i];
 
             if (cell._alive) {
-                cell.Update(this.board, this.tempBoard); //update cell
-                cell.Divide(this.tempBoard, this.board); //spawn children
+                cell.Update(this.board); //update cell
+                cell.Divide(this.board); //spawn children
             }
 
-
         }
-
-        this.board.Update(this.tempBoard); //update board
     }
 }
 
