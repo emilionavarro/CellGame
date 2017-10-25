@@ -14,6 +14,10 @@ class Group2 extends Cell {
         return "Group 2";
     }
 
+    SetMutation() {
+        this.mutation = this.ExchangeMutation;
+    }
+
     CreateChild(position) {
         return new Group2(this.properties.maxLifeSpan.value,
             this.properties.maxOffSpring.value,

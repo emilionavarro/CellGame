@@ -19,6 +19,8 @@ class Cell {
         this.food = 0;
         this.character = '-';
 
+        this.SetMutation();
+
         // See if we need to mutate this cell
         if (mutate) {
             this.MutateCell();
@@ -82,8 +84,18 @@ class Cell {
             //place cell on temp board
             neighbors = board.GetNeighbors(this.properties.position.value);
             
-            if (neighbors.length >= 3)
-                shouldLive = false;
+            if (neighbors.length >= 3) {
+                var enemyCount = 0;
+
+                for (var i = 0, len = neighbors.length; i < len; i++) {
+                    if (neighbors[i].properties.family.value !== this.properties.family.value) {
+                        enemyCount++;
+                    }
+                }
+
+                if (enemyCount >= 3) 
+                    shouldLive = false;
+            }
 
             if (shouldLive) {
                 //move cell, then place on temp board
@@ -110,7 +122,7 @@ class Cell {
         }
 
         // Insertion mutation
-        mutationArray = this.InsertionMutation(mutationArray, numberOfMoveableAttributes);
+        mutationArray = this.mutation(mutationArray, numberOfMoveableAttributes);
 
         // Now mutate the cell
         var i = 0;
@@ -119,6 +131,10 @@ class Cell {
                 this.properties[key] = mutationArray[i++];
             }
         }
+    }
+
+    SetMutation (){
+        this.mutation = this.InsertionMutation;
     }
 
 
@@ -149,6 +165,7 @@ class Cell {
     }
 
     DisplacementMutation (mutationArray, numberOfMoveableAttributes) {
+        //TODO: fix this mutation
         var mutationFromIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
         var mutationToIndex = this.GetRandomMutationIndex(numberOfMoveableAttributes);
         var mutationLength = this.GetRandomMutationIndex(numberOfMoveableAttributes);
@@ -162,6 +179,10 @@ class Cell {
         movingMutation = mutationArray.splice(mutationFromIndex, mutationLength);
         mutationArray.splice(mutationToIndex, mutationLength, movingMutation);
         return mutationArray;
+    }
+
+    GetRandomMutationIndex(numberTo) {
+        return (Math.floor(numberTo * Math.random()));
     }
 
     MoveCell (board) {
