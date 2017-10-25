@@ -20,11 +20,11 @@ class Board {
         direction = void 0,
         position = void 0;
 
-        direction = new Point(Helpers.GetRandomInRange(0, 2), Helpers.GetRandomInRange(0, 2));
+        direction = new Point(Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)), Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)));
         position = new Point(0, Math.floor(this.size / 2));
         this.PlaceCell(new cellTypes["TestCell"](2, 1, direction, position, false), position);
 
-        direction = new Point(Helpers.GetRandomInRange(0, 2), Helpers.GetRandomInRange(0, 2));
+        direction = new Point(Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)), Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)));
         position = new Point(this.size - 1, Math.floor(this.size / 2));
         this.PlaceCell(new cellTypes["Group2"](2, 1, direction, position, false), position);
     }
@@ -63,7 +63,7 @@ class Board {
             row = "| ";
 
             for (var j = 0; j < this.size; j++) {
-                row += (Number.isInteger(this._board[j][i].value) ? this._board[j][i].value : this._board[j][i].value.character) + " | ";
+                row += (Number.isInteger(this._board[j][i].value) ? "\x1b[31m-\x1b[0m" : this._board[j][i].value.character) + " | ";
             }
 
             console.log(row);

@@ -7,7 +7,7 @@ class Group2 extends Cell {
     }
 
     SetCharacter() {
-        this.character = "?";
+        this.character = "\x1b[34m" + "O" + "\x1b[0m";
     }
 
     GetType() {

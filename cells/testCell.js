@@ -7,7 +7,7 @@ class TestCell extends Cell {
     }
 
     SetCharacter() {
-        this.character = "~";
+        this.character = "\x1b[1m" + "X" + "\x1b[0m";
     }
 
     GetType() {
