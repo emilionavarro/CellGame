@@ -15,13 +15,18 @@ class Board {
         this.cells = this.cells.concat(changedBoard.cells);
     }
 
-    Populate() {
-        var addedCells = [];
-        var direction = new Point(1, 2);
-        var position = new Point(Math.floor(this.size / 2), Math.floor(this.size / 2));
-        var cell = new Cell(2, 1, direction, position, "life", false);
+    Populate(cellTypes) {
+        var addedCells = [],
+        direction = void 0,
+        position = void 0;
 
-        this.PlaceCell(cell, position);
+        direction = new Point(Helpers.GetRandomInRange(0, 2), Helpers.GetRandomInRange(0, 2));
+        position = new Point(0, Math.floor(this.size / 2));
+        this.PlaceCell(new cellTypes["TestCell"](2, 1, direction, position, false), position);
+
+        direction = new Point(Helpers.GetRandomInRange(0, 2), Helpers.GetRandomInRange(0, 2));
+        position = new Point(this.size - 1, Math.floor(this.size / 2));
+        this.PlaceCell(new cellTypes["Group2"](2, 1, direction, position, false), position);
     }
 
     PlaceCell(cell, position) {
@@ -58,7 +63,7 @@ class Board {
             row = "| ";
 
             for (var j = 0; j < this.size; j++) {
-                row += (Number.isInteger(this._board[j][i].value) ? this._board[j][i].value : "-") + " | ";
+                row += (Number.isInteger(this._board[j][i].value) ? this._board[j][i].value : this._board[j][i].value.character) + " | ";
             }
 
             console.log(row);

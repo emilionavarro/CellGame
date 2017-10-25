@@ -4,13 +4,13 @@ const Cell = require('./Cell');
 const cellProperty = require('./cellProperty');
 
 class CellGame {
-    constructor(size) {
+    constructor(size, cellTypes) {
         this.size = size;
         this.board = new Board(size);
         this.board.Generate();
-        this.board.Populate();
+        this.board.Populate(cellTypes);
 
-        this.interval = 2000;
+        this.interval = 1200;
     }
 
     Play(generation) {

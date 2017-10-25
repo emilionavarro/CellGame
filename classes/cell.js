@@ -17,11 +17,16 @@ class Cell {
 
         this._alive = true;
         this.food = 0;
+        this.character = '-';
 
         // See if we need to mutate this cell
         if (mutate) {
             this.MutateCell();
         }
+    }
+
+    SetCharacter() {
+        this.character = "-";
     }
 
     Print() {
@@ -164,6 +169,10 @@ class Cell {
             // dec movemenet on y
             maxY--;
         }
+    }
+
+    GetType() {
+        return "Generic";
     }
 
     CanMove(direction, quantity, board) {
