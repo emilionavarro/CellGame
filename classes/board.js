@@ -1,7 +1,7 @@
-const Point = require('./Point');
-const Cell = require('./Cell');
-const Helpers = require('./Helpers');
-const BoardSlot = require('./BoardSlot');
+const Point = require('./point');
+const Cell = require('./cell');
+const Helpers = require('./helpers');
+const BoardSlot = require('./boardSlot');
 
 class Board {
     constructor(size) {
@@ -20,13 +20,13 @@ class Board {
         direction = void 0,
         position = void 0;
 
-        direction = new Point(Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)), Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)));
+        direction = new Point(Helpers.GenerateStartMaxMovement(), Helpers.GenerateStartMaxMovement());
         position = new Point(0, Math.floor(this.size / 2));
-        this.PlaceCell(new cellTypes["TestCell"](2, 1, direction, position, false), position);
+        this.PlaceCell(new cellTypes["TestCell"](Helpers.GenerateStartMaxLife(), Helpers.GenerateStartMaxChildren(), direction, position, false), position);
 
-        direction = new Point(Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)), Helpers.GetRandomInRange(1, Math.ceil(this.size / 5)));
+        direction = new Point(Helpers.GenerateStartMaxMovement(), Helpers.GenerateStartMaxMovement());
         position = new Point(this.size - 1, Math.floor(this.size / 2));
-        this.PlaceCell(new cellTypes["Group2"](2, 1, direction, position, false), position);
+        this.PlaceCell(new cellTypes["Group2"](Helpers.GenerateStartMaxLife(), Helpers.GenerateStartMaxChildren(), direction, position, false), position);
     }
 
     PlaceCell(cell, position) {

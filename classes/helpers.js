@@ -33,6 +33,31 @@ class Helpers {
     static GetAllowedSurroundingEnemys() {
         return 3;
     }
+
+    // Start cell max life
+    static GenerateStartMaxLife() {
+        return 2;
+    }
+
+    // Start cell max children
+    static GenerateStartMaxChildren() {
+        return 1;
+    }
+
+    // Start cell movement either X or Y
+    static GenerateStartMaxMovement() {
+        return this.GetRandomInRange(1, Math.ceil(this.GetBoardSize() / 5));
+    }
+
+    // Start cell food requirement for children.
+    static GenerateStartFoodRequirement() {
+        return this.GetRandomInRange(1, 3);
+    }
+
+    // start cell Starting food
+    static GenerateStartFood() {
+        return 0;
+    }
 }
 
 module.exports = Helpers;

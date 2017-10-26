@@ -1,7 +1,7 @@
-const Point = require('./Point');
-const Board = require('./Board');
-const Cell = require('./Cell');
-const Helpers = require('./Helpers');
+const Point = require('./point');
+const Board = require('./board');
+const Cell = require('./cell');
+const Helpers = require('./helpers');
 
 class CellGame {
     constructor(size, cellTypes) {

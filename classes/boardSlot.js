@@ -1,4 +1,4 @@
-const Helpers = require('./Helpers');
+const Helpers = require('./helpers');
 
 class BoardSlot {
     constructor () {

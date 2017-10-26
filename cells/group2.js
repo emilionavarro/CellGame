@@ -1,6 +1,6 @@
-const Cell = require('../classes/Cell');
-const Genes = require('./../enums/Genes');
-const Helpers = require('./../classes/Helpers');
+const Cell = require('../classes/cell');
+const Genes = require('./../enums/genes');
+const Helpers = require('./../classes/helpers');
 
 class Group2 extends Cell {
     constructor (lifeSpan, maxOffspring, direction, position, mutate) {

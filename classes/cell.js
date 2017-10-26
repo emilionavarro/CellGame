@@ -1,19 +1,19 @@
-const Helpers = require('./Helpers');
-const Point = require('./Point');
-const Genes = require('./../enums/Genes');
+const Helpers = require('./helpers');
+const Point = require('./point');
+const Genes = require('./../enums/genes');
 
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
         this.attributes = [];
 
-        this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Helpers.GetRandomInRange(1, 3));
+        this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Helpers.GenerateStartFoodRequirement());
 
         this._generation = 0;
         this._family = family;
         this._alive = true;
 
         this.position = position;
-        this.food = 0;
+        this.food = Helpers.GenerateStartFood();
 
         this.SetCharacter();
         this.SetMutation();
@@ -123,7 +123,7 @@ class Cell {
         
         // Verify that we dont add to the end something that does not exist anymore.
         if (mutationToIndex === len)
-        mutationToIndex = len - 1;
+            mutationToIndex = len - 1;
         
         this.attributes.splice(mutationFromIndex, 1);
         this.attributes.splice(mutationToIndex, 0, movingMutation);
