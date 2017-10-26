@@ -39,16 +39,12 @@ class Cell {
                 if (this.food > this.attributes[Genes.FoodRequirement]) {
                     spawnLocation = board.GetEmptyNeighbor(this.position, board);
 
-                    //TODO: resolve children placement conflicts
-
                     if (spawnLocation) {
-                        //create child
                         var child = this.CreateChild(spawnLocation);
                         board.PlaceCell(child, spawnLocation);
                         this.food -= this.attributes[Genes.FoodRequirement];
                     }
                 } else {
-                    //not enough food to attempt division
                     break;
                 }
             }
@@ -67,6 +63,7 @@ class Cell {
     Update(board) {
         this._generation++;
         this._deathCheck(board);
+        this.Divide(board);
     }
 
     _setMutation () {

@@ -37,7 +37,6 @@ class CellGame {
 
             if (cell._alive) {
                 cell.Update(this.board); //update cell
-                cell.Divide(this.board); //spawn children
             }
 
         }
