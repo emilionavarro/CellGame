@@ -17,7 +17,7 @@ class Group2 extends Cell {
     }
 
     SetMutation() {
-        this.mutation = this.ExchangeMutation;
+        this.mutation = this.DisplacementMutation;
     }
 
     MoveCell (board) {
@@ -33,7 +33,7 @@ class Group2 extends Cell {
         var canMoveX = true;
         var canMoveY = true;
         while ((maxX !== 0 || maxY !== 0) && (canMoveX || canMoveY)) {
-           moveable = this.CanMove(direction, quantity, board);
+            moveable = this.CanMove(direction, quantity, board);
 
             if(!direction){
                 if (moveable && maxX !== 0) {

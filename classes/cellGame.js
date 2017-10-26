@@ -1,6 +1,7 @@
 const Point = require('./Point');
 const Board = require('./Board');
 const Cell = require('./Cell');
+const Helpers = require('./Helpers');
 
 class CellGame {
     constructor(size, cellTypes) {
@@ -9,7 +10,7 @@ class CellGame {
         this.board.Generate();
         this.board.Populate(cellTypes);
 
-        this.interval = 1200;
+        this.interval = Helpers.GetTimeInterval();
     }
 
     Play(generation) {

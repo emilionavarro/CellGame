@@ -75,6 +75,7 @@ class Cell {
         //rules
         var neighbors = void 0;
         var shouldLive = true;
+        var allowedEnemys = Helpers.GetAllowedSurroundingEnemys();
 
         this._generation++;
 
@@ -82,7 +83,7 @@ class Cell {
             //place cell on temp board
             neighbors = board.GetNeighbors(this.position);
             
-            if (neighbors.length >= 3) {
+            if (neighbors.length >= allowedEnemys) {
                 var enemyCount = 0;
 
                 for (var i = 0, len = neighbors.length; i < len; i++) {
@@ -91,7 +92,7 @@ class Cell {
                     }
                 }
 
-                if (enemyCount >= 3) 
+                if (enemyCount >= allowedEnemys) 
                     shouldLive = false;
             }
 

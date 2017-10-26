@@ -3,14 +3,14 @@ const Helpers = require('./Helpers');
 class BoardSlot {
     constructor () {
         this.value = 0;
-        this.food = Helpers.GetRandomInRange(2, 4);
+        this.food = Helpers.GetRandomInRange(Helpers.GetBoardStartingMinFood(), Helpers.GetBoardStartingMaxFood());
     }
 
     Reset(food) {
         if (food !== null) {
             this.food = food;
         } else {
-            this.food = Helpers.GetRandomInRange(1, 3);
+            this.food = Helpers.GetRandomInRange(Helpers.GetBoardNewMinFood(), Helpers.GetBoardNewMaxFood());
         }
 
         this.value = 0; //remove cell from board slot

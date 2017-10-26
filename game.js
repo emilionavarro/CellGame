@@ -3,7 +3,6 @@ const TestCell = require('./cells/TestCell');
 const Group2 = require('./cells/Group2');
 const Point = require('./classes/Point');
 const Helpers = require('./classes/Helpers');
-const boardSize = 20;
 
 //get custom cells
 var customCells = [];
@@ -13,6 +12,6 @@ cellTypes["TestCell"] = TestCell;
 cellTypes["Group2"] = Group2;
 
 //create cell game with custom cells
-var game = new CellGame(boardSize, cellTypes);
+var game = new CellGame(Helpers.GetBoardSize(), cellTypes);
 
 game.Play();
