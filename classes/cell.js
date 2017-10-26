@@ -144,19 +144,25 @@ class Cell {
 
     DisplacementMutation () {
         var len = this.attributes.length;
-        //TODO: fix this mutation
         var mutationFromIndex = this.GetRandomMutationIndex(len);
-        var mutationToIndex = this.GetRandomMutationIndex(len);
         var mutationLength = this.GetRandomMutationIndex(len);
         var movingMutation = [];
 
-        if (mutationFromIndex > mutationToIndex) {
-            if ((mutationFromIndex + mutationLength) > len)
-                mutationLength = len - mutationFromIndex;
-        }
+        // Must have at least one mutation
+        if (mutationLength === 0) 
+            mutationLength++;
+
+        // Make sure we dont over do it
+        if ((mutationFromIndex + mutationLength) > len)
+            mutationLength = len - mutationFromIndex;
 
         movingMutation = this.attributes.splice(mutationFromIndex, mutationLength);
-        this.attributes.splice(mutationToIndex, mutationLength, movingMutation);
+
+        // Get location we going to place in
+        var mutationToIndex = this.GetRandomMutationIndex(this.attributes.length);
+
+        for (var i = 0; i < mutationLength; i++)
+            this.attributes.splice((mutationToIndex + i), 0, movingMutation[i]);
     }
 
     GetRandomMutationIndex(numberTo) {
