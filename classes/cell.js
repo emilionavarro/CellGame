@@ -14,15 +14,15 @@ class Cell {
         this.position = position;
         this.food = Helpers.GenerateStartFood();
 
-        this.SetCharacter();
-        this.SetMutation();
+        this._setCharacter();
+        this._setMutation();
 
         if (mutate) {
             this.mutation();
         }
     }
 
-    SetCharacter() {
+    _setCharacter() {
         this.character = "-";
     }
 
@@ -65,34 +65,29 @@ class Cell {
     }
 
     Update(board) {
-        //rules
-        var neighbors = void 0;
-        var shouldLive = true;
-
         this._generation++;
-
-        if (this._generation <= this.attributes[Genes.LifeSpan]) {
-            shouldLive = !this._shouldDieFromEnemyCount(board);
-
-            if (shouldLive) {
-                this.MoveCell(board);
-            } else {
-                this._die(board);
-            }
-                  
-            
-        } else {
-            this._die(board);            
-        }
+        this._deathCheck(board);
     }
 
-    SetMutation () {
+    _setMutation () {
         this.mutation = this.InsertionMutation;
+    }
+
+    _deathCheck(board) {
+        if (this._shouldDieFromAge() || this._shouldDieFromEnemyCount()) {
+            this._die(board);
+        } else {
+            this.MoveCell(board);
+        }
     }
 
     _die(board) {
         this._alive = false;
         board._board[this.position.x][this.position.y].Reset(this.food);
+    }
+
+    _shouldDieFromAge() {
+        return !(this._generation <= this.attributes[Genes.LifeSpan]);
     }
 
     _shouldDieFromEnemyCount(board) {
