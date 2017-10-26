@@ -5,7 +5,6 @@ const Genes = require('./../enums/genes');
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
         this.attributes = [];
-
         this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Helpers.GenerateStartFoodRequirement());
 
         this._generation = 0;
@@ -28,13 +27,7 @@ class Cell {
     }
 
     Print() {
-        console.log("Generation: " + this._generation);
-        console.log("Location: " + this.position.x + "," + this.position.y);
-        console.log("Max life: " + this.attributes[Genes.LifeSpan]);
-        console.log("xMovement: " + this.attributes[Genes.MoveX]);
-        console.log("yMovement: " + this.attributes[Genes.MoveY]);
-        console.log("maxOffSpring: " + this.attributes[Genes.MaxOffspring]);
-
+        Helpers.printCell(this);
     }
 
     Divide(board) {
@@ -75,42 +68,53 @@ class Cell {
         //rules
         var neighbors = void 0;
         var shouldLive = true;
-        var allowedEnemys = Helpers.GetAllowedSurroundingEnemys();
 
         this._generation++;
 
         if (this._generation <= this.attributes[Genes.LifeSpan]) {
-            //place cell on temp board
-            neighbors = board.GetNeighbors(this.position);
-            
-            if (neighbors.length >= allowedEnemys) {
-                var enemyCount = 0;
-
-                for (var i = 0, len = neighbors.length; i < len; i++) {
-                    if (neighbors[i]._family !== this._family) {
-                        enemyCount++;
-                    }
-                }
-
-                if (enemyCount >= allowedEnemys) 
-                    shouldLive = false;
-            }
+            shouldLive = !this._shouldDieFromEnemyCount(board);
 
             if (shouldLive) {
-                //move cell, then place on temp board
                 this.MoveCell(board);
-
-                board._board[this.position.x][this.position.y].value = this;
-            }                
+            } else {
+                this._die(board);
+            }
+                  
             
         } else {
-            this._alive = false;
-            board._board[this.position.x][this.position.y].Reset(this.food);
+            this._die(board);            
         }
     }
 
-    SetMutation (){
+    SetMutation () {
         this.mutation = this.InsertionMutation;
+    }
+
+    _die(board) {
+        this._alive = false;
+        board._board[this.position.x][this.position.y].Reset(this.food);
+    }
+
+    _shouldDieFromEnemyCount(board) {
+        if (!board) 
+            return false;
+
+        var deathSquadCount = Helpers.GetAllowedSurroundingEnemys(),
+        neighbors = board.GetNeighbors(this.position),
+        enemyCount = 0,
+        shouldLive = true;
+
+        if (neighbors.length >= deathSquadCount) {      
+            for (var i = 0, len = neighbors.length; i < len; i++) {
+                if (neighbors[i]._family !== this._family) 
+                    enemyCount++;                
+
+                if (enemyCount >= deathSquadCount) 
+                    return true;
+            }            
+        }
+
+        return false;
     }
 
 
