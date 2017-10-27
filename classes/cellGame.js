@@ -21,6 +21,9 @@ class CellGame {
         this.PlayRound();
         console.log(" ");
 
+        if ((generation % Helpers.GetBoardRemoveOldTimer()) === 0)
+            this.board._RemoveDeadCells();
+
         setTimeout(this.Play.bind(this, generation), this.interval);
     }
 

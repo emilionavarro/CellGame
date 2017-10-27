@@ -162,6 +162,28 @@ class Cell {
             this.attributes.splice((mutationToIndex + i), 0, movingMutation[i]);
     }
 
+    InversionMutation() {
+        var len = this.attributes.length;
+        var mutationFromIndex = this.GetRandomMutationIndex(len);
+        var mutationToIndex = this.GetRandomMutationIndex(len);
+        var mutationLength = 0;
+        var movingMutation = [];
+
+        // Make sure they are in right order
+        if (mutationFromIndex > mutationToIndex) {
+            var temp = mutationToIndex;
+            mutationFromIndex = mutationToIndex;
+            mutationToIndex = temp;
+        }
+
+        for (var i = mutationToIndex; i > mutationFromIndex; i--) 
+            movingMutation.push(this.attributes.splice(i, 1));
+
+        mutationLength = mutationToIndex - mutationFromIndex;
+        for (var i = 0; i < mutationLength; i++)
+            this.attributes.splice((mutationFromIndex + i), 0, movingMutation[i]);
+    }
+
     GetRandomMutationIndex(numberTo) {
         return (Math.floor(numberTo * Math.random()));
     }

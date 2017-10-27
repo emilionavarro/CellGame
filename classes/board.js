@@ -123,6 +123,18 @@ class Board {
 
         return minMax;
     }
+
+    _RemoveDeadCells() {
+        for (var i = 0, len = this.cells.length; i < len; i++) {
+            if (!this.cells[i]._alive) {
+                this.cells.splice(i, 1);
+
+                // Since we removed the cell at that location dec i and len
+                i--;
+                len--;
+            }
+        }
+    }
 }
 
 module.exports = Board;

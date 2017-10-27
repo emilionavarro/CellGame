@@ -34,6 +34,10 @@ class Helpers {
         return 3;
     }
 
+    static GetBoardRemoveOldTimer() {
+        return 10;
+    }
+
     // Start cell max life
     static GenerateStartMaxLife() {
         return 2;
