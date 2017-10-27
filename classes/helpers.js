@@ -11,7 +11,7 @@ class Helpers {
     }
 
     static GetBoardSize() {
-        return 5;
+        return 20;
     }
 
     static GetBoardStartingMinFood() {

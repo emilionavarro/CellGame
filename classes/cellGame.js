@@ -15,14 +15,10 @@ class CellGame {
 
     Play(generation) {
         generation = generation || 0;
-        console.log("Generation: " + ++generation);
 
-        console.log("Pre: ");
+        console.log("Generation: " + ++generation);
         this.board.Print();
         this.PlayRound();
-        console.log("Post: ");
-        this.board.Print();
-
         console.log(" ");
 
         setTimeout(this.Play.bind(this, generation), this.interval);
@@ -34,10 +30,11 @@ class CellGame {
 
         for (var i = 0, len = cells.length; i < len; i++) {
             cell = cells[i];
-
+            
             if (cell._alive) {
                 cell.Update(this.board); //update cell
             }
+            
 
         }
     }
