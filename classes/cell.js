@@ -1,6 +1,8 @@
 const Helpers = require('./helpers');
 const Point = require('./point');
 const Genes = require('./../enums/genes');
+const Mutations = require('./mutations.js');
+const MutationTypes = require('./../enums/mutationTypes');
 
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
@@ -18,7 +20,7 @@ class Cell {
         this._setMutation();
 
         if (mutate) {
-            this.mutation();
+            this.mutation(this);
         }
     }
 
@@ -67,7 +69,7 @@ class Cell {
     }
 
     _setMutation () {
-        this.mutation = this.InsertionMutation;
+        this.mutation = Mutations.InsertionMutation;
     }
 
     _deathCheck(board) {
@@ -107,85 +109,6 @@ class Cell {
         }
 
         return false;
-    }
-
-
-    InsertionMutation () {
-        var len = this.attributes.length;
-
-        var mutationFromIndex = this.GetRandomMutationIndex(len);
-        var mutationToIndex = this.GetRandomMutationIndex(len);
-        var movingMutation = this.attributes[mutationFromIndex];
-        
-        // Verify that we dont add to the end something that does not exist anymore.
-        if (mutationToIndex === len)
-            mutationToIndex = len - 1;
-        
-        this.attributes.splice(mutationFromIndex, 1);
-        this.attributes.splice(mutationToIndex, 0, movingMutation);
-    }
-
-    ExchangeMutation () {
-        var len = this.attributes.length;
-        var mutationFromIndex = this.GetRandomMutationIndex(len);
-        var mutationToIndex = this.GetRandomMutationIndex(len);
-        var movingMutation = this.attributes[mutationFromIndex];
-
-        // Verify that we dont add to the end something that does not exist anymore.
-        if (mutationToIndex === len) 
-            mutationToIndex = len - 1;
-            
-        this.attributes.splice(mutationFromIndex, 1, this.attributes[mutationToIndex]);
-        this.attributes.splice(mutationToIndex, 1, movingMutation);
-    }
-
-    DisplacementMutation () {
-        var len = this.attributes.length;
-        var mutationFromIndex = this.GetRandomMutationIndex(len);
-        var mutationLength = this.GetRandomMutationIndex(len);
-        var movingMutation = [];
-
-        // Must have at least one mutation
-        if (mutationLength === 0) 
-            mutationLength++;
-
-        // Make sure we dont over do it
-        if ((mutationFromIndex + mutationLength) > len)
-            mutationLength = len - mutationFromIndex;
-
-        movingMutation = this.attributes.splice(mutationFromIndex, mutationLength);
-
-        // Get location we going to place in
-        var mutationToIndex = this.GetRandomMutationIndex(this.attributes.length);
-
-        for (var i = 0; i < mutationLength; i++)
-            this.attributes.splice((mutationToIndex + i), 0, movingMutation[i]);
-    }
-
-    InversionMutation() {
-        var len = this.attributes.length;
-        var mutationFromIndex = this.GetRandomMutationIndex(len);
-        var mutationToIndex = this.GetRandomMutationIndex(len);
-        var mutationLength = 0;
-        var movingMutation = [];
-
-        // Make sure they are in right order
-        if (mutationFromIndex > mutationToIndex) {
-            var temp = mutationToIndex;
-            mutationFromIndex = mutationToIndex;
-            mutationToIndex = temp;
-        }
-
-        for (var i = mutationToIndex; i > mutationFromIndex; i--) 
-            movingMutation.push(this.attributes.splice(i, 1));
-
-        mutationLength = mutationToIndex - mutationFromIndex;
-        for (var i = 0; i < mutationLength; i++)
-            this.attributes.splice((mutationFromIndex + i), 0, movingMutation[i]);
-    }
-
-    GetRandomMutationIndex(numberTo) {
-        return (Math.floor(numberTo * Math.random()));
     }
 
     MoveCell (board) {
