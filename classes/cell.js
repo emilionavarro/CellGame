@@ -30,32 +30,42 @@ class Cell {
         this._divide(board, this._getSpawnCount());
     }
 
-    Divide(board, slot) {
-        //decide
+    Divide(board, spawnCount, slots) {
+        var chosenSlots = [];
+
+        for (var i = 0, len = slots.length; i < len && i < spawnCount; i++) {
+            chosenSlots.push(slots[i]);
+        }
+
+        return chosenSlots;
     }
 
     _divide(board, spawnCount) {
         if (this._alive) {
-            var spawnLocation = void 0;
+            var child = void 0;
+            var availableSlots = board.GetEmptyNeighbors(this.position);
+            var chosenSlots = this.Divide(board, spawnCount, availableSlots);
 
-            for (var i = 0; i < spawnCount; i++) {
-                if (this.food > this.attributes[Genes.FoodRequirement]) {
-                    spawnLocation = board.GetEmptyNeighbor(this.position);
+            //TODO: validate chosenslots
 
-                    if (spawnLocation) {
-                        var child = this.CreateChild(spawnLocation);
-                        board.PlaceCell(child, spawnLocation);
-                        this.food -= this.attributes[Genes.FoodRequirement];
-                    }
-                } else {
-                    break;
-                }
+            for(var i = 0, len = chosenSlots.length; i < len && i < spawnCount ; i++) {
+                child = this.CreateChild(chosenSlots[i]);
+                board.PlaceCell(child, chosenSlots[i]);
+                this.food -= this.attributes[Genes.FoodRequirement];
             }
+
         }
     }
 
     _getSpawnCount() {
-        return Helpers.GetRandomInRange(1, this.attributes[Genes.MaxOffspring]);
+        var maxOffspringAllowed = Helpers.GetRandomInRange(1, this.attributes[Genes.MaxOffspring]);
+        var maxOffspringPossible = Math.floor(this.food / this.attributes[Genes.FoodRequirement]);
+        
+        if (maxOffspringPossible > maxOffspringAllowed) { 
+            return maxOffspringAllowed;
+        } else {
+            return maxOffspringPossible;
+        }
     }
 
     CreateChild(position) {
