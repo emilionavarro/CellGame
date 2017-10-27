@@ -24,22 +24,23 @@ class Cell {
         }
     }
 
-    _setCharacter() {
-        this.character = "-";
+    Update(board) {
+        this._generation++;
+        this._deathCheck(board);
+        this._divide(board, this._getSpawnCount());
     }
 
-    Print() {
-        Helpers.printCell(this);
+    Divide(board, slot) {
+        //decide
     }
 
-    Divide(board) {
+    _divide(board, spawnCount) {
         if (this._alive) {
-            var spawnCount = Helpers.GetRandomInRange(1, this.attributes[Genes.MaxOffspring]);
             var spawnLocation = void 0;
 
             for (var i = 0; i < spawnCount; i++) {
                 if (this.food > this.attributes[Genes.FoodRequirement]) {
-                    spawnLocation = board.GetEmptyNeighbor(this.position, board);
+                    spawnLocation = board.GetEmptyNeighbor(this.position);
 
                     if (spawnLocation) {
                         var child = this.CreateChild(spawnLocation);
@@ -53,6 +54,10 @@ class Cell {
         }
     }
 
+    _getSpawnCount() {
+        return Helpers.GetRandomInRange(1, this.attributes[Genes.MaxOffspring]);
+    }
+
     CreateChild(position) {
         return new this.__proto__.constructor(this.attributes[Genes.LifeSpan],
             this.attributes[Genes.MaxOffspring],
@@ -62,10 +67,30 @@ class Cell {
             true);
     }
 
-    Update(board) {
-        this._generation++;
-        this._deathCheck(board);
-        this.Divide(board);
+    Move (board) {
+       
+    }
+
+    GetType() {
+        return "Generic";
+    }
+
+    CanMove(direction, quantity, board) {
+        if (direction === true) {
+            // Vertical
+            return board.IsSlotEmpty(this.position.x, this.position.y + quantity);
+        } else {
+            // Horizontal
+            return board.IsSlotEmpty(this.position.x + quantity, this.position.y);
+        }
+    }
+
+    _setCharacter() {
+        this.character = "-";
+    }
+
+    _print() {
+        Helpers.printCell(this);
     }
 
     _setMutation () {
@@ -76,7 +101,7 @@ class Cell {
         if (this._shouldDieFromAge() || this._shouldDieFromEnemyCount()) {
             this._die(board);
         } else {
-            this.MoveCell(board);
+            this.Move(board);
         }
     }
 
@@ -109,79 +134,6 @@ class Cell {
         }
 
         return false;
-    }
-
-    MoveCell (board) {
-        var moveLocation = void 0;
-        var quantity = Helpers.GetRandomInRange(0, 1);
-        if (quantity === 0)
-            quantity--;
-
-        var direction = false; // start with horizontal
-        var maxX = this.attributes[Genes.MoveX];
-        while ((maxX !== 0) && this.CanMove(direction, quantity, board)) {
-            // Remove cell from old location
-            board._board[this.position.x][this.position.y].Reset(0);
-            moveLocation = {x: this.position.x + quantity, y: this.position.y};
-            this.position.x = this.position.x + quantity;
-            board.MoveCell(this, moveLocation);
-
-            // dec movement on x
-            maxX--;
-        }
-
-        direction = true; // now do vertical
-        quantity = Helpers.GetRandomInRange(0, 1);
-        if (quantity === 0)
-            quantity--;
-
-        var maxY = this.attributes[Genes.MoveY];
-        while ((maxY !== 0) && this.CanMove(direction, quantity, board)) {
-            // Remove cell from old location
-            board._board[this.position.x][this.position.y].Reset(0);
-            moveLocation = {x: this.position.x, y: this.position.y + quantity};
-            this.position.y = this.position.y + quantity;
-            board.MoveCell(this, moveLocation);
-
-            // dec movemenet on y
-            maxY--;
-        }
-    }
-
-    GetType() {
-        return "Generic";
-    }
-
-    CanMove(direction, quantity, board) {
-        if (direction === true) {
-            // Vertical
-            // Check if off board
-            if (((this.position.y + quantity) >= board.size) ||
-                ((this.position.y + quantity) < 0)) {
-                return false;
-            }
-
-            // Check if cell exists here
-            var newX = this.position.x;
-            var newY = (this.position.y + quantity);
-            if (board._board[newX][newY].value !== 0)
-                return false;
-        } else {
-            // Horizontal
-            // Check if off board
-            if (((this.position.x + quantity) >= board.size) ||
-                ((this.position.x + quantity) < 0)) {
-                return false;
-            }
-
-            // Check if cell exists here
-            var newX = (this.position.x + quantity);
-            var newY = this.position.y;
-            if (board._board[newX][newY].value !== 0)
-                return false;
-        }
-
-        return true;
     }
 }
 

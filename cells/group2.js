@@ -20,7 +20,7 @@ class Group2 extends Cell {
         this.mutation = this.DisplacementMutation;
     }
 
-    MoveCell (board) {
+    Move (board) {
         var moveLocation = void 0;
         var quantity = Helpers.GetRandomInRange(0, 1);
         if (quantity === 0)

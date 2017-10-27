@@ -56,33 +56,9 @@ class Board {
         this._board = tempBoard;
     }
 
-    Print() {
-        var row;
-
-        for (var i = 0; i < this.size; i++) {
-            row = "| ";
-
-            for (var j = 0; j < this.size; j++) {
-                row += (Number.isInteger(this._board[j][i].value) ? "\x1b[31m-\x1b[0m" : this._board[j][i].value.character) + " | ";
-            }
-
-            console.log(row);
-        }
-    }
-
     GetEmptyNeighbor(position, secondaryBoard) {
-        var minMaxX = this._GetBoardMinMaxLocations(position.x);
-        var minMaxY = this._GetBoardMinMaxLocations(position.y);
-        var locations = [];
         var spawnLocation = void 0;
-
-        for (var i = minMaxX.min; i <= minMaxX.max; i++) {
-            for (var j = minMaxY.min; j <= minMaxY.max; j++) {
-                if (this._board[i][j].value === 0 && secondaryBoard._board[i][j].value === 0) {
-                    locations.push({ x: i, y: j });
-                }
-            }
-        }
+        var locations = this.GetEmptyNeighbors(position);
 
         if (locations.length > 0) {
             spawnLocation = Helpers.GetRandomInRange(0, locations.length - 1);
@@ -90,6 +66,23 @@ class Board {
         }
 
         return null;
+    }
+
+    GetEmptyNeighbors(position) {
+        var minMaxX = this._GetBoardMinMaxLocations(position.x);
+        var minMaxY = this._GetBoardMinMaxLocations(position.y);
+        var locations = [];
+        var spawnLocation = void 0;
+
+        for (var i = minMaxX.min; i <= minMaxX.max; i++) {
+            for (var j = minMaxY.min; j <= minMaxY.max; j++) {
+                if (this._board[i][j].value === 0) {
+                    locations.push({ x: i, y: j });
+                }
+            }
+        }
+
+        return locations;
     }
 
     GetNeighbors(position) {
@@ -106,6 +99,27 @@ class Board {
         }
 
         return neighbors;
+    }
+
+    IsSlotEmpty(x, y) {
+        if (!x || !y || x < 0 || y < 0 || x >= this.size || y >= this.size) 
+            return false;
+        
+        return this._board[x][y].value === 0;
+    }
+
+    Print() {
+        var row;
+
+        for (var i = 0; i < this.size; i++) {
+            row = "| ";
+
+            for (var j = 0; j < this.size; j++) {
+                row += (Number.isInteger(this._board[j][i].value) ? "\x1b[31m-\x1b[0m" : this._board[j][i].value.character) + " | ";
+            }
+
+            console.log(row);
+        }
     }
 
     _GetBoardMinMaxLocations(singleAxisPoint) {
