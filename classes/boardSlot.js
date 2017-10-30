@@ -1,16 +1,17 @@
 const Helpers = require('./helpers');
+const Config = require('./Configuration');
 
 class BoardSlot {
     constructor () {
         this.value = 0;
-        this.food = Helpers.GetRandomInRange(Helpers.GetBoardStartingMinFood(), Helpers.GetBoardStartingMaxFood());
+        this.food = Helpers.GetRandomInRange(Config.GetBoardStartingMinFood(), Config.GetBoardStartingMaxFood());
     }
 
     Reset(food) {
         if (food !== null) {
             this.food = food;
         } else {
-            this.food = Helpers.GetRandomInRange(Helpers.GetBoardNewMinFood(), Helpers.GetBoardNewMaxFood());
+            this.food = Helpers.GetRandomInRange(Config.GetBoardNewMinFood(), Config.GetBoardNewMaxFood());
         }
 
         this.value = 0; //remove cell from board slot

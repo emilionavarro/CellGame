@@ -1,20 +1,20 @@
 const Helpers = require('./helpers');
-const Point = require('./point');
 const Genes = require('./../enums/genes');
 const Mutations = require('./mutations.js');
 const MutationTypes = require('./../enums/mutationTypes');
+const Config = require('./Configuration');
 
 class Cell {
     constructor(lifeSpan, maxOffspring, direction, position, family, mutate) {
         this.attributes = [];
-        this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Helpers.GenerateStartFoodRequirement());
+        this.attributes.push(lifeSpan, maxOffspring, direction.x, direction.y, Config.GenerateStartFoodRequirement());
 
         this._generation = 0;
         this._family = family;
         this._alive = true;
 
         this.position = position;
-        this.food = Helpers.GenerateStartFood();
+        this.food = Config.GenerateStartFood();
 
         this._setCharacter();
         this._setMutation();
@@ -128,7 +128,7 @@ class Cell {
         if (!board) 
             return false;
 
-        var deathSquadCount = Helpers.GetAllowedSurroundingEnemys(),
+        var deathSquadCount = Config.GetAllowedSurroundingEnemys(),
         neighbors = board.GetNeighbors(this.position),
         enemyCount = 0,
         shouldLive = true;

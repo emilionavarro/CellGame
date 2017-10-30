@@ -1,7 +1,6 @@
-const Point = require('./point');
 const Board = require('./board');
 const Cell = require('./cell');
-const Helpers = require('./helpers');
+const Config = require('./Configuration');
 
 class CellGame {
     constructor(size, cellTypes) {
@@ -10,7 +9,7 @@ class CellGame {
         this.board.Generate();
         this.board.Populate(cellTypes);
 
-        this.interval = Helpers.GetTimeInterval();
+        this.interval = Config.GetTimeInterval();
     }
 
     Play(generation) {
@@ -21,7 +20,7 @@ class CellGame {
         this.PlayRound();
         console.log(" ");
 
-        if ((generation % Helpers.GetBoardRemoveOldTimer()) === 0)
+        if ((generation % Config.GetBoardRemoveOldTimer()) === 0)
             this.board._RemoveDeadCells();
 
         setTimeout(this.Play.bind(this, generation), this.interval);

@@ -2,6 +2,7 @@ const Point = require('./point');
 const Cell = require('./cell');
 const Helpers = require('./helpers');
 const BoardSlot = require('./boardSlot');
+const Config = require('./Configuration');
 
 class Board {
     constructor(size) {
@@ -20,13 +21,13 @@ class Board {
         direction = void 0,
         position = void 0;
 
-        direction = new Point(Helpers.GenerateStartMaxMovement(), Helpers.GenerateStartMaxMovement());
+        direction = new Point(Config.GenerateStartMaxMovement(), Config.GenerateStartMaxMovement());
         position = new Point(0, Math.floor(this.size / 2));
-        this.PlaceCell(new cellTypes["TestCell"](Helpers.GenerateStartMaxLife(), Helpers.GenerateStartMaxChildren(), direction, position, false), position);
+        this.PlaceCell(new cellTypes["TestCell"](Config.GenerateStartMaxLife(), Config.GenerateStartMaxChildren(), direction, position, false), position);
 
-        direction = new Point(Helpers.GenerateStartMaxMovement(), Helpers.GenerateStartMaxMovement());
+        direction = new Point(Config.GenerateStartMaxMovement(), Config.GenerateStartMaxMovement());
         position = new Point(this.size - 1, Math.floor(this.size / 2));
-        this.PlaceCell(new cellTypes["Group2"](Helpers.GenerateStartMaxLife(), Helpers.GenerateStartMaxChildren(), direction, position, false), position);
+        this.PlaceCell(new cellTypes["Group2"](Config.GenerateStartMaxLife(), Config.GenerateStartMaxChildren(), direction, position, false), position);
     }
 
     PlaceCell(cell, position) {

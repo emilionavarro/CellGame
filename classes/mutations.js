@@ -1,7 +1,3 @@
-const Helpers = require('./helpers');
-const Point = require('./point');
-const Genes = require('./../enums/genes');
-
 class Mutations {
     static InsertionMutation (cell) {
         var len = cell.attributes.length;
